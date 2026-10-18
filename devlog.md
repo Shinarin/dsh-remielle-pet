@@ -11,7 +11,7 @@
 - **社区规范**：新增 `.github/ISSUE_TEMPLATE/{bug_report,feature_request,config}.yml`、`.github/PULL_REQUEST_TEMPLATE.md`、`.github/workflows/test.yml`（Node 22 / 24 执行 `npm run check` + `npm test`）与 `CONTRIBUTING.md`
 - **规格与测试**：新增 `spec/display-metadata.md`；新增 `test/display.test.mjs` 锁定展示字段、exports/files、locale、图标尺寸与 LICENSE；`npm test` 11/11 通过，`npm run check` 通过
 - **文档**：README 增加状态徽章、生态约定说明、新文件结构与贡献入口；development.md 同步目录结构、测试命令与展示元数据说明
-- **状态**：GitHub 话题与描述已通过 API 设置；本地文件改动已提交但**尚未 push**（等待用户明确指令）
+- **推送与线上验证**：已推送 `90f82d2` 到 `origin/master`；GitHub Actions「test」在 Node 22 / 24 上全部通过；GitHub 已识别 `LICENSE` 为 MIT，仓库社区健康度 28% → 71%；话题与描述已通过 API 设置并复核
 
 ## v1.1.1（当前）
 
