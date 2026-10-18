@@ -122,3 +122,13 @@ function safeClassName(el) {
 **解决方案**：1.1.0 起整体改名 `dsh-remielle-pet`：包名 / entry id / loader id / settings.section id / HTTP 前缀（`/plugins/dsh-remielle-pet/*`）/ DOM 与 CSS / 全局变量 / 自定义事件全部迁移；服务端配置迁到 `~/.dsh/plugins/dsh-remielle-pet/config.json`，旧路径只读迁移；localStorage `dsh-pet:*` 保留以兼容用户数据。新增 `spec/plugin-identity.md` 与 `test/identity.test.mjs` 锁定身份与路由。
 
 **教训**：插件身份是 package name + entry id + loader id + route namespace 的组合，任一项复用公共名称都会与生态里的同名插件硬冲突；`/pet/*` 这种通用路由必须换成 `/plugins/<plugin-id>/*`。原生置顶桌宠的 UI 冲突无法用 DOM z-index 解决，只能文档化共存限制。
+
+## 13. 启动诊断 TypeError：NodeList 没有 slice 方法
+
+**现象**：插件启动后控制台出现 `[DSH-REMIELLE-PET] Diagnostics error: TypeError: spinners.slice is not a function or its return value is not iterable`，且 `====== DOM DIAGNOSTICS ======` 之后没有 `END DIAGNOSTICS`。
+
+**根本原因**：`document.querySelectorAll()` 返回 `NodeList`，不是数组；`spinners.slice(0, 5)` 在运行时抛错，被 `runDiagnostics` 外层 `catch` 吞掉，只留下错误日志并中断后续诊断步骤。
+
+**解决方案**：先转数组再截断：`Array.from(spinners).slice(0, 5)`（v1.1.1）。验证方式：独立 DSH 实例 + 无头 Edge 的 CDP 日志中，`END DIAGNOSTICS` 出现且无 `Diagnostics error`。
+
+**教训**：DOM 集合（`NodeList` / `HTMLCollection`）与数组的 API 不同，`slice` 等数组方法必须先转换；这类错误容易被 `try/catch` 静默，需靠真实浏览器日志发现。

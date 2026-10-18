@@ -1,6 +1,6 @@
 {
   "name": "dsh-remielle-pet",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "dsh-remielle-pet（蕾米埃尔桌宠）：DSH 桌宠插件，在 DSH 界面显示跟随会话状态的宠物 GIF，支持 Web UI 与桌面版。",
   "type": "module",
   "main": "lib/index.js",

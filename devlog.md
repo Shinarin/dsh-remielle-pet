@@ -1,6 +1,14 @@
 # 开发日志
 
-## v1.1.0（当前）
+## v1.1.1（当前）
+
+### 2026-10-18（修复启动诊断 TypeError）
+
+- **修复**：`client.js` 的 `runDiagnostics` 对 `document.querySelectorAll` 返回的 `NodeList` 调用 `.slice()`，抛 `TypeError: spinners.slice is not a function`；改为 `Array.from(spinners).slice(0, 5)`，诊断日志可完整输出
+- **影响范围**：仅启动诊断日志；状态检测与桌宠功能不受影响，但异常会中断诊断步骤 5
+- **验证**：独立 DSH 运行时（本地 link 安装）+ 无头 Edge，确认 `DOM DIAGNOSTICS` 开始与 `END DIAGNOSTICS` 结束日志均出现，无 `Diagnostics error`、无未捕获异常
+
+## v1.1.0
 
 ### 2026-10-18（身份重构：dsh-pet → dsh-remielle-pet）
 

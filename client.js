@@ -237,7 +237,8 @@ window.__ModuleLoader__.load({
           // 4. 探测 loading / spinner
           const spinners = document.querySelectorAll('[class*="loading"], [class*="spinner"], [class*="progress"], svg[class*="spin"]');
           console.error("[DSH-REMIELLE-PET] Loading/spinner elements:", spinners.length);
-          for (const s of spinners.slice(0, 5)) {
+          // NodeList 没有 slice 方法；先转数组再截断，否则诊断步骤 4 会抛 TypeError。
+          for (const s of Array.from(spinners).slice(0, 5)) {
             try {
               console.error("  -", s.tagName, "class=", safeClassName(s).slice(0, 80));
             } catch {}
