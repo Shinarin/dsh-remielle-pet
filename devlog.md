@@ -1,6 +1,19 @@
 # 开发日志
 
-## v1.0.0（当前）
+## v1.1.0（当前）
+
+### 2026-10-18（身份重构：dsh-pet → dsh-remielle-pet）
+
+- **重命名插件**：`dsh-pet` → `dsh-remielle-pet`。包名、Cordis bundle entry id、客户端 loader id、`settings.section` id、DOM id / CSS 动画 / window 全局变量 / 自定义事件全部迁移到新前缀
+- **修复与其它桌宠插件的身份冲突**：npm `dsh-pet`（大肥鱼，PC2005-cloud/dsh-pet）与本插件旧版包名、entry id、loader id 完全相同，无法在同一 profile 共存；改名后彻底隔离
+- **修复 HTTP 路由冲突**：不再注册 `/pet/*`，统一迁移到 `/plugins/dsh-remielle-pet/*`，避免与 `@dsh-pet/pet` 等插件的 exact `/pet/state` 撞车（DSH webserver 对重复路由直接抛错）
+- **配置迁移**：服务端配置迁到 `~/.dsh/plugins/dsh-remielle-pet/config.json`，旧路径 `~/.dsh/plugins/dsh-pet/config.json` 只读一次并迁移，旧文件保留；localStorage `dsh-pet:*` 保留，用户位置/大小/自定义 GIF 不丢失
+- **新增规格与测试**：`spec/plugin-identity.md` 定义身份契约；`test/identity.test.mjs`（`npm test`）锁定包名/id/路由命名空间与配置迁移
+- **文档**：README 增加「从旧版 dsh-pet 升级」与「与其他桌宠插件共存」；development.md、debug.md 同步更新
+- **仓库改名**：GitHub 仓库 `Shinarin/dsh-pet` → `Shinarin/dsh-remielle-pet`（旧地址由 GitHub 重定向）
+- 注意：本地已 commit，未 push、未发版；远端 `master` 仍为改动前的提交
+
+## v1.0.0
 
 ### 2026-10-05（reasoning 误判修复）
 

@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: "dsh-pet",
+  id: "dsh-remielle-pet",
   factory: (require) => {
     var module = { exports: {} };
     var exports = module.exports;
@@ -8,12 +8,14 @@ window.__ModuleLoader__.load({
     const inject = ["slots"];
 
     // ── 配置 ──
-    const API_BASE = "/pet";
+    const API_BASE = "/plugins/dsh-remielle-pet";
     const STATES = ["thinking", "answering", "approval", "idle"];
     const DEFAULT_SCALE = 1.0;
     const POS_KEY = "dsh-pet:position";
     const DEFAULT_POS = { right: 100, bottom: 200 }; // 默认锚点：窗口右下角，左移 100px、上移 200px
     const CONFIG_KEY = "dsh-pet:config";
+    // 历史 localStorage 命名空间：保留 dsh-pet:* 以兼容既有位置/设置/GIF 数据。
+    // 它不是 DSH 身份标识；插件身份见 spec/plugin-identity.md。
 
     // ── 工具 ──
     async function fetchJson(path, opts) {
@@ -54,13 +56,13 @@ window.__ModuleLoader__.load({
     const VISIBILITY_KEY = "dsh-pet:visible";
 
     function createPetOverlay() {
-      const existing = document.getElementById("dsh-pet-overlay");
+      const existing = document.getElementById("dsh-remielle-pet-overlay");
       if (existing) existing.remove();
 
       const visible = localStorage.getItem(VISIBILITY_KEY) !== "false";
 
       const container = document.createElement("div");
-      container.id = "dsh-pet-overlay";
+      container.id = "dsh-remielle-pet-overlay";
       container.style.cssText = `
         position: fixed;
         z-index: 99999;
@@ -78,7 +80,7 @@ window.__ModuleLoader__.load({
       `;
 
       const img = document.createElement("img");
-      img.id = "dsh-pet-img";
+      img.id = "dsh-remielle-pet-img";
       img.draggable = false;
       img.style.cssText = `
         max-width: 100%;
@@ -90,13 +92,13 @@ window.__ModuleLoader__.load({
 
       // 小心心容器
       const heartsContainer = document.createElement("div");
-      heartsContainer.id = "dsh-pet-hearts";
+      heartsContainer.id = "dsh-remielle-pet-hearts";
       heartsContainer.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:10;";
       container.appendChild(heartsContainer);
 
       // 状态指示点
       const dot = document.createElement("div");
-      dot.id = "dsh-pet-dot";
+      dot.id = "dsh-remielle-pet-dot";
       dot.style.cssText = `
         position: absolute;
         top: 4px; right: 4px;
@@ -110,7 +112,7 @@ window.__ModuleLoader__.load({
 
       // CSS fallback 角色（当 GIF 无法加载时显示）
       const fallback = document.createElement("div");
-      fallback.id = "dsh-pet-fallback";
+      fallback.id = "dsh-remielle-pet-fallback";
       fallback.style.cssText = `
         display: none;
         width: 120px;
@@ -119,7 +121,7 @@ window.__ModuleLoader__.load({
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        animation: dsh-pet-fallback-breathe 2s ease-in-out infinite;
+        animation: dsh-remielle-pet-fallback-breathe 2s ease-in-out infinite;
       `;
       // 眼睛
       const eyeL = document.createElement("div");
@@ -174,7 +176,7 @@ window.__ModuleLoader__.load({
 
       start() {
         try {
-          console.error("[DSH-PET] DOM StateDetector starting...");
+          console.error("[DSH-REMIELLE-PET] DOM StateDetector starting...");
           this.runDiagnostics();
           if (document.body) {
             this.observer = new MutationObserver(() => this.detectState());
@@ -183,7 +185,7 @@ window.__ModuleLoader__.load({
           this.pollTimer = setInterval(() => this.detectState(), 500);
           this.detectState();
         } catch (err) {
-          console.error("[DSH-PET] StateDetector start failed:", err);
+          console.error("[DSH-REMIELLE-PET] StateDetector start failed:", err);
         }
       }
 
@@ -192,14 +194,14 @@ window.__ModuleLoader__.load({
         if (this.diagnosed) return;
         this.diagnosed = true;
         try {
-          console.error("[DSH-PET] ====== DOM DIAGNOSTICS ======");
+          console.error("[DSH-REMIELLE-PET] ====== DOM DIAGNOSTICS ======");
 
           // 1. 探测所有 button 的文本
           const allBtns = Array.from(document.querySelectorAll("button, [role='button']"));
           const btnTexts = allBtns
             .map((b) => (b.innerText || b.textContent || "").trim())
             .filter((t) => t.length > 0 && t.length < 50);
-          console.error("[DSH-PET] Buttons found:", btnTexts.slice(0, 20));
+          console.error("[DSH-REMIELLE-PET] Buttons found:", btnTexts.slice(0, 20));
 
           // 2. 探测可能的消息列表容器
           const msgSelectors = [
@@ -216,7 +218,7 @@ window.__ModuleLoader__.load({
             try {
               const el = document.querySelector(sel);
               if (el) {
-                console.error("[DSH-PET] Container candidate:", sel, "children=", el.children.length);
+                console.error("[DSH-REMIELLE-PET] Container candidate:", sel, "children=", el.children.length);
                 break;
               }
             } catch {}
@@ -224,7 +226,7 @@ window.__ModuleLoader__.load({
 
           // 3. 探测输入区域
           const inputs = document.querySelectorAll("textarea, input[type='text']");
-          console.error("[DSH-PET] Input elements:", inputs.length);
+          console.error("[DSH-REMIELLE-PET] Input elements:", inputs.length);
           for (const inp of inputs) {
             try {
               const placeholder = (inp.placeholder || "").slice(0, 30);
@@ -234,7 +236,7 @@ window.__ModuleLoader__.load({
 
           // 4. 探测 loading / spinner
           const spinners = document.querySelectorAll('[class*="loading"], [class*="spinner"], [class*="progress"], svg[class*="spin"]');
-          console.error("[DSH-PET] Loading/spinner elements:", spinners.length);
+          console.error("[DSH-REMIELLE-PET] Loading/spinner elements:", spinners.length);
           for (const s of spinners.slice(0, 5)) {
             try {
               console.error("  -", s.tagName, "class=", safeClassName(s).slice(0, 80));
@@ -257,12 +259,12 @@ window.__ModuleLoader__.load({
             } catch {}
           }
           if (matches.length > 0) {
-            console.error("[DSH-PET] Keyword matches:", matches.slice(0, 15));
+            console.error("[DSH-REMIELLE-PET] Keyword matches:", matches.slice(0, 15));
           }
 
-          console.error("[DSH-PET] ====== END DIAGNOSTICS ======");
+          console.error("[DSH-REMIELLE-PET] ====== END DIAGNOSTICS ======");
         } catch (err) {
-          console.error("[DSH-PET] Diagnostics error:", err);
+          console.error("[DSH-REMIELLE-PET] Diagnostics error:", err);
         }
       }
 
@@ -302,14 +304,14 @@ window.__ModuleLoader__.load({
 
           if (newState !== prevState) {
             console.error(
-              "[DSH-PET] DOM State:", prevState, "->", newState,
+              "[DSH-REMIELLE-PET] DOM State:", prevState, "->", newState,
               "{approval:", hasApproval, ", sticky:", stickyApproval, ", producing:", isProducing, ", busy:", isBusy, "}"
             );
             this.currentState = newState;
             this.onStateChange(newState);
           }
         } catch (err) {
-          console.error("[DSH-PET] detectState error:", err);
+          console.error("[DSH-REMIELLE-PET] detectState error:", err);
         }
       }
 
@@ -401,7 +403,7 @@ window.__ModuleLoader__.load({
     // ── 状态管理 ──
     class PetController {
       constructor(overlay) {
-        console.error('[DSH-PET] PetController constructor');
+        console.error('[DSH-REMIELLE-PET] PetController constructor');
         this.overlay = overlay;
         this.currentState = "idle";
         this.scale = DEFAULT_SCALE;
@@ -427,25 +429,25 @@ window.__ModuleLoader__.load({
       }
 
       async preloadDefaultGifs() {
-        console.error('[DSH-PET] preloadDefaultGifs start');
+        console.error('[DSH-REMIELLE-PET] preloadDefaultGifs start');
         for (const s of STATES) {
           try {
             const url = `${API_BASE}/default-gif/${s}`;
-            console.error('[DSH-PET] fetching', url);
+            console.error('[DSH-REMIELLE-PET] fetching', url);
             const r = await fetch(url);
-            console.error('[DSH-PET] fetch', s, 'status=', r.status);
+            console.error('[DSH-REMIELLE-PET] fetch', s, 'status=', r.status);
             if (r.ok) {
               const blob = await r.blob();
               this.defaultGifUrls[s] = URL.createObjectURL(blob);
-              console.error('[DSH-PET] blob URL created for', s, 'size=', blob.size);
+              console.error('[DSH-REMIELLE-PET] blob URL created for', s, 'size=', blob.size);
             } else {
-              console.error('[DSH-PET] fetch failed for', s, 'status=', r.status);
+              console.error('[DSH-REMIELLE-PET] fetch failed for', s, 'status=', r.status);
             }
           } catch (e) {
-            console.error(`[DSH-PET] 预加载默认GIF ${s} 失败:`, e);
+            console.error(`[DSH-REMIELLE-PET] 预加载默认GIF ${s} 失败:`, e);
           }
         }
-        console.error('[DSH-PET] preloadDefaultGifs done, urls=', Object.keys(this.defaultGifUrls));
+        console.error('[DSH-REMIELLE-PET] preloadDefaultGifs done, urls=', Object.keys(this.defaultGifUrls));
         // 预加载完成后重新渲染
         this.render();
       }
@@ -453,7 +455,7 @@ window.__ModuleLoader__.load({
       setupImgError() {
         this.overlay.img.addEventListener("error", () => {
           this.overlay.img.style.display = "none";
-          const fallback = document.getElementById("dsh-pet-fallback");
+          const fallback = document.getElementById("dsh-remielle-pet-fallback");
           if (fallback) {
             fallback.style.display = "flex";
             fallback.className = "";
@@ -462,7 +464,7 @@ window.__ModuleLoader__.load({
         });
         this.overlay.img.addEventListener("load", () => {
           this.overlay.img.style.display = "";
-          const fallback = document.getElementById("dsh-pet-fallback");
+          const fallback = document.getElementById("dsh-remielle-pet-fallback");
           if (fallback) fallback.style.display = "none";
         });
       }
@@ -532,7 +534,7 @@ window.__ModuleLoader__.load({
         }
         // 离开 approval 状态时停止弹跳动画
         if (wasApproval && state !== "approval") {
-          this.overlay.container.classList.remove("dsh-pet-alert-hop");
+          this.overlay.container.classList.remove("dsh-remielle-pet-alert-hop");
         }
       }
 
@@ -561,10 +563,10 @@ window.__ModuleLoader__.load({
         }
         if (!url) {
           url = `${API_BASE}/default-gif/${state}`;
-          console.error('[DSH-PET] render fallback URL=', url);
+          console.error('[DSH-REMIELLE-PET] render fallback URL=', url);
         }
-        console.error('[DSH-PET] render state=', state, 'url=', url);
-        const fallback = document.getElementById("dsh-pet-fallback");
+        console.error('[DSH-REMIELLE-PET] render state=', state, 'url=', url);
+        const fallback = document.getElementById("dsh-remielle-pet-fallback");
         if (fallback) fallback.style.display = "none";
         this.overlay.img.style.display = "";
         if (this.overlay.img.src !== url) {
@@ -669,23 +671,23 @@ window.__ModuleLoader__.load({
 
       pat(e) {
         const img = this.overlay.img;
-        img.classList.remove("dsh-pet-pat");
+        img.classList.remove("dsh-remielle-pet-pat");
         void img.offsetWidth;
-        img.classList.add("dsh-pet-pat");
-        setTimeout(() => img.classList.remove("dsh-pet-pat"), 450);
+        img.classList.add("dsh-remielle-pet-pat");
+        setTimeout(() => img.classList.remove("dsh-remielle-pet-pat"), 450);
         this.spawnHearts(e.clientX, e.clientY);
       }
 
       spawnHearts(x, y) {
         const container = this.overlay.heartsContainer;
         if (!container) {
-          console.error("[DSH-PET] spawnHearts: heartsContainer is null!");
+          console.error("[DSH-REMIELLE-PET] spawnHearts: heartsContainer is null!");
           return;
         }
         const rect = this.overlay.container.getBoundingClientRect();
         const colors = ["#ff6b8a", "#ff8fa3", "#e0453a", "#ffb3c1"];
         const count = 3 + Math.floor(Math.random() * 3);
-        console.error("[DSH-PET] spawnHearts:", count, "hearts at", x, y, "container rect:", rect.left, rect.top);
+        console.error("[DSH-REMIELLE-PET] spawnHearts:", count, "hearts at", x, y, "container rect:", rect.left, rect.top);
         for (let i = 0; i < count; i++) {
           const h = document.createElement("span");
           h.textContent = "♥";
@@ -698,28 +700,28 @@ window.__ModuleLoader__.load({
           // 确保位置在容器范围内，不会被 overflow:hidden 裁剪
           const left = Math.max(0, Math.min(220 - size, localX - size / 2 + dx * 0.5));
           const top = Math.max(0, Math.min(220 - size, Math.max(localY, 20) - size / 2));
-          h.style.cssText = "position:absolute;display:inline-block;z-index:11;pointer-events:none;line-height:1;font-size:" + size + "px;color:" + color + ";left:" + left + "px;top:" + top + "px;animation:dsh-pet-heart-float 0.9s ease-out forwards;";
+          h.style.cssText = "position:absolute;display:inline-block;z-index:11;pointer-events:none;line-height:1;font-size:" + size + "px;color:" + color + ";left:" + left + "px;top:" + top + "px;animation:dsh-remielle-pet-heart-float 0.9s ease-out forwards;";
           h.style.setProperty("--dx", dx + "px");
           h.style.setProperty("--rot", rot + "deg");
           h.addEventListener("animationend", () => h.remove());
           container.appendChild(h);
-          console.error("[DSH-PET] heart appended:", i, "left:", left, "top:", top, "size:", size);
+          console.error("[DSH-REMIELLE-PET] heart appended:", i, "left:", left, "top:", top, "size:", size);
         }
       }
 
       alertHop() {
         const el = this.overlay.container;
-        el.classList.remove("dsh-pet-alert-hop", "dsh-pet-done-hop");
+        el.classList.remove("dsh-remielle-pet-alert-hop", "dsh-remielle-pet-done-hop");
         void el.offsetWidth;
-        el.classList.add("dsh-pet-alert-hop");
+        el.classList.add("dsh-remielle-pet-alert-hop");
       }
 
       doneHop() {
         const el = this.overlay.container;
-        el.classList.remove("dsh-pet-alert-hop", "dsh-pet-done-hop");
+        el.classList.remove("dsh-remielle-pet-alert-hop", "dsh-remielle-pet-done-hop");
         void el.offsetWidth;
-        el.classList.add("dsh-pet-done-hop");
-        setTimeout(() => el.classList.remove("dsh-pet-done-hop"), 3700);
+        el.classList.add("dsh-remielle-pet-done-hop");
+        setTimeout(() => el.classList.remove("dsh-remielle-pet-done-hop"), 3700);
       }
 
       chime() {
@@ -757,7 +759,7 @@ window.__ModuleLoader__.load({
 
       openSettings() {
         // 通过事件通知设置面板打开
-        window.dispatchEvent(new CustomEvent("dsh-pet:open-settings"));
+        window.dispatchEvent(new CustomEvent("dsh-remielle-pet:open-settings"));
       }
 
       saveUserConfig() {
@@ -855,12 +857,12 @@ window.__ModuleLoader__.load({
         if (updates.visible !== undefined) {
           localStorage.setItem(VISIBILITY_KEY, next.visible ? "true" : "false");
           // 双重保险：直接调用控制器 + 派发事件
-          const ctrl = window.__DSH_PET_CONTROLLER__;
+          const ctrl = window.__DSH_REMIELLE_PET_CONTROLLER__;
           if (ctrl) {
             if (next.visible) ctrl.show();
             else ctrl.hide();
           }
-          window.dispatchEvent(new CustomEvent("dsh-pet:visible-changed", { detail: next.visible }));
+          window.dispatchEvent(new CustomEvent("dsh-remielle-pet:visible-changed", { detail: next.visible }));
         }
         const cfg = {
           scale: next.scale / 100,
@@ -879,7 +881,7 @@ window.__ModuleLoader__.load({
             body: JSON.stringify({ config: cfg }),
           });
           // 通知宠物控制器更新
-          window.dispatchEvent(new CustomEvent("dsh-pet:config-changed", { detail: cfg }));
+          window.dispatchEvent(new CustomEvent("dsh-remielle-pet:config-changed", { detail: cfg }));
         } catch {}
       }, [state]);
 
@@ -895,7 +897,7 @@ window.__ModuleLoader__.load({
             const dataUrl = reader.result;
             localStorage.setItem(`dsh-pet:gif:${s}`, dataUrl);
             setPreviews((p) => ({ ...p, [s]: dataUrl }));
-            window.dispatchEvent(new CustomEvent("dsh-pet:set-gif", { detail: { state: s, dataUrl } }));
+            window.dispatchEvent(new CustomEvent("dsh-remielle-pet:set-gif", { detail: { state: s, dataUrl } }));
           };
           reader.readAsDataURL(file);
         };
@@ -905,7 +907,7 @@ window.__ModuleLoader__.load({
       const clearGif = (s) => {
         localStorage.removeItem(`dsh-pet:gif:${s}`);
         setPreviews((p) => ({ ...p, [s]: null }));
-        window.dispatchEvent(new CustomEvent("dsh-pet:set-gif", { detail: { state: s, dataUrl: null } }));
+        window.dispatchEvent(new CustomEvent("dsh-remielle-pet:set-gif", { detail: { state: s, dataUrl: null } }));
       };
 
       const labels = {
@@ -1011,11 +1013,11 @@ window.__ModuleLoader__.load({
 
     // ── 注入样式 ──
     function injectStyles() {
-      if (document.getElementById("dsh-pet-styles")) return;
+      if (document.getElementById("dsh-remielle-pet-styles")) return;
       const style = document.createElement("style");
-      style.id = "dsh-pet-styles";
+      style.id = "dsh-remielle-pet-styles";
       style.textContent = `
-        @keyframes dsh-pet-pat-squish {
+        @keyframes dsh-remielle-pet-pat-squish {
           0%   { transform: scale(1, 1); }
           25%  { transform: scale(1.12, 0.85); }
           50%  { transform: scale(0.94, 1.0); }
@@ -1023,65 +1025,65 @@ window.__ModuleLoader__.load({
           85%  { transform: scale(0.98, 1.0); }
           100% { transform: scale(1, 1); }
         }
-        .dsh-pet-pat {
-          animation: dsh-pet-pat-squish 0.45s ease-out;
+        .dsh-remielle-pet-pat {
+          animation: dsh-remielle-pet-pat-squish 0.45s ease-out;
           transform-origin: 50% 100%;
         }
-        @keyframes dsh-pet-alert-hop {
+        @keyframes dsh-remielle-pet-alert-hop {
           0%, 100% { transform: translateY(0); }
           8%  { transform: translateY(-14px); }
           16% { transform: translateY(0); }
           24% { transform: translateY(-8px); }
           32% { transform: translateY(0); }
         }
-        .dsh-pet-alert-hop {
-          animation: dsh-pet-alert-hop 1.8s ease-in-out infinite;
+        .dsh-remielle-pet-alert-hop {
+          animation: dsh-remielle-pet-alert-hop 1.8s ease-in-out infinite;
         }
-        .dsh-pet-done-hop {
-          animation: dsh-pet-alert-hop 1.8s ease-in-out 2;
+        .dsh-remielle-pet-done-hop {
+          animation: dsh-remielle-pet-alert-hop 1.8s ease-in-out 2;
         }
-        @keyframes dsh-pet-heart-float {
+        @keyframes dsh-remielle-pet-heart-float {
           0%   { opacity: 0; transform: translate(0, 0) scale(0.4); }
           15%  { opacity: 1; }
           65%  { opacity: 0; }
           100% { opacity: 0; transform: translate(var(--dx), -80px) scale(1) rotate(var(--rot)); }
         }
-        @keyframes dsh-pet-fallback-breathe {
+        @keyframes dsh-remielle-pet-fallback-breathe {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.05); }
         }
-        #dsh-pet-fallback.thinking { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important; }
-        #dsh-pet-fallback.answering { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important; }
-        #dsh-pet-fallback.approval { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important; }
-        #dsh-pet-fallback.idle { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important; }
-        #dsh-pet-fallback.offline { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%) !important; filter: grayscale(1) opacity(0.45); }
+        #dsh-remielle-pet-fallback.thinking { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important; }
+        #dsh-remielle-pet-fallback.answering { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important; }
+        #dsh-remielle-pet-fallback.approval { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important; }
+        #dsh-remielle-pet-fallback.idle { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important; }
+        #dsh-remielle-pet-fallback.offline { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%) !important; filter: grayscale(1) opacity(0.45); }
       `;
       document.head.appendChild(style);
     }
 
     // ── 插件 apply ──
     function apply(ctx) {
-      console.error('[DSH-PET] ========== CLIENT APPLY START ==========');
+      console.error('[DSH-REMIELLE-PET] ========== CLIENT APPLY START ==========');
       try {
         injectStyles();
-        console.error('[DSH-PET] styles injected');
+        console.error('[DSH-REMIELLE-PET] styles injected');
         const overlay = createPetOverlay();
-        console.error('[DSH-PET] overlay created');
+        console.error('[DSH-REMIELLE-PET] overlay created');
         const controller = new PetController(overlay);
-        console.error('[DSH-PET] controller created, state=' + controller.currentState);
+        console.error('[DSH-REMIELLE-PET] controller created, state=' + controller.currentState);
 
         // 将控制器挂载到全局，供设置面板直接调用（比 CustomEvent 更可靠）
-        window.__DSH_PET_CONTROLLER__ = controller;
+        window.__DSH_REMIELLE_PET_CONTROLLER__ = controller;
 
         // 监听配置变化
-        window.addEventListener("dsh-pet:config-changed", (e) => {
+        window.addEventListener("dsh-remielle-pet:config-changed", (e) => {
           if (e.detail.scale !== undefined) controller.applyScale(e.detail.scale);
           Object.assign(controller.config, e.detail);
         });
-        window.addEventListener("dsh-pet:set-gif", (e) => {
+        window.addEventListener("dsh-remielle-pet:set-gif", (e) => {
           controller.setCustomGif(e.detail.state, e.detail.dataUrl);
         });
-        window.addEventListener("dsh-pet:visible-changed", (e) => {
+        window.addEventListener("dsh-remielle-pet:visible-changed", (e) => {
           if (e.detail) controller.show();
           else controller.hide();
         });
@@ -1090,18 +1092,18 @@ window.__ModuleLoader__.load({
         try {
           ctx.effect(() => ctx.slots.inject("settings.section", () => ctx.slots.register({
             name: "settings.section",
-            id: "dsh-pet",
+            id: "dsh-remielle-pet",
             order: 45,
             label: () => "桌宠设置",
           }, () => require("react").createElement(SettingsSection, null))), "pet: settings");
-          console.error('[DSH-PET] settings section registered');
+          console.error('[DSH-REMIELLE-PET] settings section registered');
         } catch (slotErr) {
-          console.error('[DSH-PET] settings section registration failed:', slotErr);
+          console.error('[DSH-REMIELLE-PET] settings section registration failed:', slotErr);
         }
       } catch (err) {
-        console.error('[DSH-PET] ========== CLIENT APPLY ERROR ==========', err);
+        console.error('[DSH-REMIELLE-PET] ========== CLIENT APPLY ERROR ==========', err);
       }
-      console.error('[DSH-PET] ========== CLIENT APPLY END ==========');
+      console.error('[DSH-REMIELLE-PET] ========== CLIENT APPLY END ==========');
 
       // 预加载 idle GIF（如果 blob URL 还未创建）
       setTimeout(async () => {
@@ -1118,7 +1120,7 @@ window.__ModuleLoader__.load({
       }, 1500);
     }
 
-    exports.name = "dsh-pet";
+    exports.name = "dsh-remielle-pet";
     exports.inject = inject;
     exports.apply = apply;
     return module.exports;

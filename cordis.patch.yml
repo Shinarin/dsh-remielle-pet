@@ -1,7 +1,8 @@
-# dsh-pet 插件 bundle patch
-# 将插件插入到 profile 的 layer 栈中
+# dsh-remielle-pet 插件 bundle patch
+# 将插件插入到 profile 的 layer 栈中。
+# entry id / name 必须与 package.json 的包名一致且全局唯一，见 spec/plugin-identity.md。
 - insert:
-    - id: dsh-pet
-      name: 'dsh-pet'
+    - id: dsh-remielle-pet
+      name: 'dsh-remielle-pet'
       config:
         enabled: true

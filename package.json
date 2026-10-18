@@ -1,7 +1,7 @@
 {
-  "name": "dsh-pet",
-  "version": "1.0.0",
-  "description": "DSH 桌宠插件：在 DSH 界面显示跟随会话状态的宠物 GIF，支持 webui 和桌面版。",
+  "name": "dsh-remielle-pet",
+  "version": "1.1.0",
+  "description": "dsh-remielle-pet（蕾米埃尔桌宠）：DSH 桌宠插件，在 DSH 界面显示跟随会话状态的宠物 GIF，支持 Web UI 与桌面版。",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -17,13 +17,16 @@
     "README.md"
   ],
   "license": "MIT",
+  "scripts": {
+    "test": "node --test test/identity.test.mjs"
+  },
   "keywords": [
     "dsh",
     "dsh-plugin",
     "deepseek-harness",
     "pet",
     "desk-pet",
-    "pet",
+    "remielle",
     "桌宠"
   ],
   "dsh": {

@@ -109,3 +109,16 @@ function safeClassName(el) {
 **根本原因**：`div[data-streaming]` 是 AssistantMarkdown 根的流式标记（ui-chat:5957），只要所属 step 在流式就存在，**无论流式内容是正文还是 reasoning**——reasoning 块本就渲染在 AssistantMarkdown 内部（ui-chat:5919-5930）。此前把 `[data-variant="think"]` 从 answering 判据中移除后，`div[data-streaming]` 单独成立，reasoning 期间照样命中。
 **解决方案**：`checkProducing()` 中 `div[data-streaming]` 必须附加「内含 `[data-variant="think"]` 子树之外的可见正文块（p/pre/li/h1-h6/blockquote/table/img/hr）」才算 answering（client.js `hasAnswerContent()`）。注意 ReasoningRow 折叠摘要的 `span[data-streaming]`（ui-chat:5812）是 span 不参与 div 匹配；展开的思考正文在 think 子树内被 closest 排除。
 **教训**：容器级流式标记 ≠ 内容类型；检测「正在回答」要区分流式的是正文还是推理。
+
+## 12. 与其它桌宠插件「打架」：同名同 id + 通用路由命名空间
+
+**现象**：安装/启用另一款桌宠（如 npm 上的 `dsh-pet` 大肥鱼）后，两款插件互相顶替——装了一个另一个消失，或启动报路由/模块重复；桌面级置顶桌宠（如 `dsh-dafeiyu`）还会盖住本插件并截走点击。
+
+**根本原因**（代码/运行时核对）：
+1. **身份同名**：npm 包 `dsh-pet@0.3.7`（PC2005-cloud/dsh-pet）与本插件旧版完全同名同 id——package name、cordis entry id、client loader id 都是 `dsh-pet`，前端 bundle 都由包名推导为 `/plugins/dsh-pet/client.js`。DSH 的 client-modules 以包名标识浏览器模块，同一包出现多个 loader 源是 composition error，重复 graph entry 直接抛错。
+2. **路由通用**：本插件旧版注册 exact `/pet/state`；`@dsh-pet/pet@0.5.0` 也注册 exact `/pet/state`。DSH `@deepseek-ai/dsh-host-webserver` 对重复 `(kind, path)` 直接 `throw`，后加载的插件 apply 失败。
+3. **窗口层**：`dsh-dafeiyu` 是 Qt 原生置顶窗口（`max(448, pet_width+50) × (pet_height+135)`，默认贴屏幕右下 24px，无点击穿透），层级高于 DSH 页面；本插件是 DOM 浮层（right 100 / bottom 200），正好落在其窗口矩形内 → 被覆盖、点击被截走。
+
+**解决方案**：1.1.0 起整体改名 `dsh-remielle-pet`：包名 / entry id / loader id / settings.section id / HTTP 前缀（`/plugins/dsh-remielle-pet/*`）/ DOM 与 CSS / 全局变量 / 自定义事件全部迁移；服务端配置迁到 `~/.dsh/plugins/dsh-remielle-pet/config.json`，旧路径只读迁移；localStorage `dsh-pet:*` 保留以兼容用户数据。新增 `spec/plugin-identity.md` 与 `test/identity.test.mjs` 锁定身份与路由。
+
+**教训**：插件身份是 package name + entry id + loader id + route namespace 的组合，任一项复用公共名称都会与生态里的同名插件硬冲突；`/pet/*` 这种通用路由必须换成 `/plugins/<plugin-id>/*`。原生置顶桌宠的 UI 冲突无法用 DOM z-index 解决，只能文档化共存限制。

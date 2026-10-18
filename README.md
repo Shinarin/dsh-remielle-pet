@@ -1,6 +1,6 @@
-# dsh-pet
+# dsh-remielle-pet
 
-DSH（DeepSeek Harness）桌宠插件：在 DSH 界面中以浮层形式显示一只桌宠，根据当前会话状态自动切换对应 GIF。兼容 Web UI 与桌面版。
+DSH（DeepSeek Harness）桌宠插件（蕾米埃尔）：在 DSH 界面中以浮层形式显示一只桌宠，根据当前会话状态自动切换对应 GIF。兼容 Web UI 与桌面版。
 
 ## 功能
 
@@ -36,14 +36,16 @@ DSH（DeepSeek Harness）桌宠插件：在 DSH 界面中以浮层形式显示�
 在 DSH 设置 → 插件 → 添加插件中输入：
 
 ```
-github:Shinarin/dsh-pet
+github:Shinarin/dsh-remielle-pet
 ```
 
 或使用命令行：
 
 ```bash
-dsh plugin --profile desktop add github:Shinarin/dsh-pet
+dsh plugin --profile desktop add github:Shinarin/dsh-remielle-pet
 ```
+
+> 插件包名与 GitHub 仓库名均为 `dsh-remielle-pet`，用于避开与 npm 上同名桌宠插件（大肥鱼）的身份冲突。旧地址 `github:Shinarin/dsh-pet` 会由 GitHub 重定向，但仍建议使用新地址。
 
 ### 方式二：本地路径
 
@@ -53,11 +55,25 @@ dsh plugin --profile desktop add <本仓库的绝对路径>
 
 注意：安装或更新后需**完全退出并重启 DSH**，插件方可生效。
 
-> **切换安装来源前请先彻底卸载**：若本机曾以本地路径（`link:`）方式安装过 dsh-pet，直接改装 GitHub 版本会触发 DSH 内置 pnpm 在 Windows 上的 junction 处理缺陷——替换过程会穿透目录联接并长时间挂起，导致安装失败。正确做法：先在设置 → 插件中卸载旧版本并重启 DSH，确认无残留后再安装新来源版本。
+> **切换安装来源前请先彻底卸载**：若本机曾以本地路径（`link:`）方式安装过旧版 `dsh-pet`，直接改装 GitHub 版本会触发 DSH 内置 pnpm 在 Windows 上的 junction 处理缺陷——替换过程会穿透目录联接并长时间挂起，导致安装失败。正确做法：先在设置 → 插件中卸载旧版本并重启 DSH，确认无残留后再安装新来源版本。
 
 ### 卸载
 
-在 DSH 设置 → 插件中找到 dsh-pet，执行卸载即可。
+在 DSH 设置 → 插件中找到 `dsh-remielle-pet`，执行卸载即可。
+
+## 从旧版 dsh-pet 升级
+
+1.1.0 起包名与插件标识由 `dsh-pet` 改为 `dsh-remielle-pet`，以修复与其它桌宠插件的身份冲突（详见 [`spec/plugin-identity.md`](spec/plugin-identity.md)）。升级步骤：
+
+1. **先备份服务端配置（可选）**：若旧版有自定义配置，备份 `~/.dsh/plugins/dsh-pet/config.json`；
+2. 安装新版并完全退出、重启 DSH；
+3. 再在设置 → 插件中卸载旧的 `dsh-pet`，重启 DSH。
+
+说明：
+
+- 新版启动时会读取旧的 `~/.dsh/plugins/dsh-pet/config.json`，并自动迁移到 `~/.dsh/plugins/dsh-remielle-pet/config.json`（旧文件保留）。如果先卸载旧版、配置文件已随安装目录删除，则新版从默认值开始；
+- localStorage 中的位置、大小与自定义 GIF 使用历史 key `dsh-pet:*`，升级后仍然生效，不会丢失；
+- 新旧两版使用不同的插件 id 与 HTTP 前缀，可以短暂共存（会同时显示两只桌宠），迁移完成后再卸载旧版即可。
 
 ## 使用方式
 
@@ -103,7 +119,7 @@ DSH 设置面板 → 桌宠设置：
 
 **问：状态切换与实际不符？**
 
-答：DSH 桌面版采用 nightly 更新通道，前端 DOM 结构可能随版本变化。请打开 DSH 开发者工具控制台并过滤 `[DSH-PET]` 日志（其中包含每次状态切换的判定依据），将日志与场景描述一并提交至 [Issues](https://github.com/Shinarin/dsh-pet/issues)。
+答：DSH 桌面版采用 nightly 更新通道，前端 DOM 结构可能随版本变化。请打开 DSH 开发者工具控制台并过滤 `[DSH-REMIELLE-PET]` 日志（其中包含每次状态切换的判定依据），将日志与场景描述一并提交至 [Issues](https://github.com/Shinarin/dsh-remielle-pet/issues)。
 
 **问：为什么 AI 深度思考时显示「思考中」而非「编辑中」？**
 
@@ -113,24 +129,32 @@ DSH 设置面板 → 桌宠设置：
 
 答：此为降级占位符，表示 GIF 加载失败（通常为插件服务端尚未就绪）。请稍候或重启 DSH；若问题持续存在，请至 Issues 反馈。
 
+## 与其他桌宠插件共存
+
+- 本插件的身份（包名、bundle entry id、客户端模块 id、设置分区 id、HTTP 前缀）与其它桌宠插件互不冲突，可与身份不同的桌宠插件同时安装。
+- **桌面级置顶桌宠**（例如 `dsh-dafeiyu` 的原生置顶窗口）层级高于 DSH 页面，可能覆盖本插件或截走鼠标事件。这是操作系统窗口层的限制，不是插件缺陷；建议同一时间只启用一只桌面级置顶桌宠，或把各自的宠物拖到不同角落。
+- 本插件不参与 z-index 竞赛，也不抢占其它插件的图层；自身浮层热区为 220×220（缩放后同比例变化）。
+
 ## 工作原理
 
 - **客户端**（`client.js`）：通过 `MutationObserver` 与 500ms 轮询读取 DSH 前端 DOM 的稳定契约（`data-*` 属性与 `aria-label`，不依赖 CSS 类名或按钮文案），推断当前状态并切换浮层 GIF
-- **服务端**（`lib/index.js`）：注册 `/pet/default-gif/:state`（内置 GIF 静态服务）与 `/pet/config`（配置持久化）HTTP 路由
-- 状态检测的完整契约及 DSH 源码出处详见 [`spec/state-detection.md`](spec/state-detection.md)
+- **服务端**（`lib/index.js`）：注册 `/plugins/dsh-remielle-pet/default-gif/:state`（内置 GIF 静态服务）与 `/plugins/dsh-remielle-pet/config`（配置持久化）HTTP 路由
+- 状态检测的完整契约及 DSH 源码出处详见 [`spec/state-detection.md`](spec/state-detection.md)；插件身份与路由命名空间见 [`spec/plugin-identity.md`](spec/plugin-identity.md)
 
 ## 文件结构
 
 ```
-dsh-pet/
-  package.json          # 插件元数据
-  cordis.patch.yml      # Cordis 层配置
+dsh-remielle-pet/
+  package.json          # 插件元数据（包名 dsh-remielle-pet）
+  cordis.patch.yml      # Cordis 层配置（entry id = dsh-remielle-pet）
   lib/
     index.js            # 服务端入口（GIF 静态服务与配置持久化路由）
   client.js             # 客户端入口（浮层 UI、状态检测、设置面板）
+  test/
+    identity.test.mjs   # 身份、路由命名空间与配置迁移回归测试
   default-gifs/         # 内置默认 GIF（idle / thinking / answering / approval）
   docs/                 # 文档配图
-  spec/                 # 行为规格（状态检测、位置锚定）
+  spec/                 # 行为规格（状态检测、位置锚定、插件身份）
   development.md        # 开发者文档
   devlog.md             # 开发日志
   debug.md              # 坑点记录
@@ -139,6 +163,12 @@ dsh-pet/
 ## 开发
 
 开发者请先阅读 [`development.md`](development.md)。修改任何行为前，请先更新 `spec/` 目录下对应的规格文档。
+
+运行身份与配置迁移测试：
+
+```bash
+npm test
+```
 
 ## License
 
