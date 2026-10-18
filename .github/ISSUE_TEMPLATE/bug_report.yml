@@ -1,0 +1,76 @@
+name: Bug 反馈
+description: 桌宠显示、状态切换、安装或设置异常
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！提交前请先阅读 [常见问题](https://github.com/Shinarin/dsh-remielle-pet#readme) 与 [debug.md](https://github.com/Shinarin/dsh-remielle-pet/blob/master/debug.md)。涉及状态检测时，请附上控制台过滤 `[DSH-REMIELLE-PET]` 得到的日志。
+  - type: input
+    id: dsh-version
+    attributes:
+      label: DSH 版本
+      description: 设置 → 关于，或在命令行执行 `dsh --version`
+      placeholder: 0.2.0-rc.2
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 运行平台
+      options:
+        - Windows 桌面版
+        - macOS 桌面版
+        - Linux 桌面版
+        - Web UI（浏览器）
+    validations:
+      required: true
+  - type: input
+    id: install-source
+    attributes:
+      label: 安装方式
+      description: GitHub 安装 / 本地路径 / 其它
+      placeholder: github:Shinarin/dsh-remielle-pet
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 ...
+        2. 发送消息 ...
+        3. 观察到 ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 可附截图或录屏；GIF 相关问题时请注明状态与自定义 GIF 信息。
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 相关日志
+      description: 浏览器/桌面版开发者工具控制台日志，建议先过滤 `[DSH-REMIELLE-PET]`。
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 自查
+      options:
+        - label: 我已阅读 README 的常见问题与 debug.md
+          required: true
+        - label: 我已确认 DSH 为最新版本，并在完全重启后仍能复现
+          required: true

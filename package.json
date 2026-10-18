@@ -7,26 +7,45 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./client.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.png"
   },
   "files": [
     "lib",
     "client.js",
     "cordis.patch.yml",
     "default-gifs",
-    "README.md"
+    "locale",
+    "icon.png",
+    "README.md",
+    "LICENSE"
   ],
   "license": "MIT",
+  "author": "Elysia (https://github.com/Shinarin)",
+  "homepage": "https://github.com/Shinarin/dsh-remielle-pet#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shinarin/dsh-remielle-pet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Shinarin/dsh-remielle-pet/issues"
+  },
   "scripts": {
-    "test": "node --test test/identity.test.mjs"
+    "test": "node --test",
+    "check": "node --check client.js && node --check lib/index.js"
   },
   "keywords": [
     "dsh",
     "dsh-plugin",
     "deepseek-harness",
+    "cordis",
+    "cordis-plugin",
     "pet",
     "desk-pet",
+    "desktop-pet",
     "remielle",
+    "gif",
     "桌宠"
   ],
   "dsh": {

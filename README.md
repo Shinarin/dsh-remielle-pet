@@ -1,6 +1,12 @@
 # dsh-remielle-pet
 
+[![test](https://github.com/Shinarin/dsh-remielle-pet/actions/workflows/test.yml/badge.svg)](https://github.com/Shinarin/dsh-remielle-pet/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/github/license/Shinarin/dsh-remielle-pet)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/Shinarin/dsh-remielle-pet)](https://github.com/Shinarin/dsh-remielle-pet/releases)
+
 DSH（DeepSeek Harness）桌宠插件（蕾米埃尔）：在 DSH 界面中以浮层形式显示一只桌宠，根据当前会话状态自动切换对应 GIF。兼容 Web UI 与桌面版。
+
+本插件遵循 DSH 官方插件生态约定：仓库使用 GitHub 话题 [`dsh-plugin`](https://github.com/topics/dsh-plugin)，包内提供中英文展示标题/描述（`locale/`）与图标（`icon.png`），可被 DSH 插件管理页直接识别。
 
 ## 功能
 
@@ -145,16 +151,24 @@ DSH 设置面板 → 桌宠设置：
 
 ```
 dsh-remielle-pet/
-  package.json          # 插件元数据（包名 dsh-remielle-pet）
+  package.json          # 插件元数据（包名、展示字段、exports / files）
   cordis.patch.yml      # Cordis 层配置（entry id = dsh-remielle-pet）
   lib/
     index.js            # 服务端入口（GIF 静态服务与配置持久化路由）
   client.js             # 客户端入口（浮层 UI、状态检测、设置面板）
+  icon.png              # 插件管理页展示图标（256×256，透明底）
+  locale/
+    en.json             # 英文展示标题与描述
+    zh.json             # 中文展示标题与描述
   test/
     identity.test.mjs   # 身份、路由命名空间与配置迁移回归测试
+    display.test.mjs    # 展示元数据、发布包清单与许可证回归测试
   default-gifs/         # 内置默认 GIF（idle / thinking / answering / approval）
   docs/                 # 文档配图
-  spec/                 # 行为规格（状态检测、位置锚定、插件身份）
+  spec/                 # 行为规格（状态检测、位置锚定、插件身份、展示元数据）
+  .github/              # Issue / PR 模板与 CI 工作流
+  LICENSE               # MIT 许可证
+  CONTRIBUTING.md       # 参与贡献指南
   development.md        # 开发者文档
   CHANGELOG.md          # 面向用户的更新日志
   devlog.md             # 开发日志
@@ -165,12 +179,17 @@ dsh-remielle-pet/
 
 开发者请先阅读 [`development.md`](development.md)。修改任何行为前，请先更新 `spec/` 目录下对应的规格文档。
 
-运行身份与配置迁移测试：
+运行回归测试与语法检查：
 
 ```bash
 npm test
+npm run check
 ```
+
+## 参与贡献
+
+欢迎提交 Issue 或 PR：反馈 Bug 请使用仓库的 Issue 模板并附上 `[DSH-REMIELLE-PET]` 控制台日志；代码改动请先阅读 [`CONTRIBUTING.md`](CONTRIBUTING.md)，并同步更新 `spec/` 与相关文档。
 
 ## License
 
-MIT
+代码与文档以 [MIT 许可证](LICENSE) 发布。内置默认 GIF 如涉及第三方角色形象，其版权归原权利方所有。

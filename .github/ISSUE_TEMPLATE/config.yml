@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 使用与排错文档
+    url: https://github.com/Shinarin/dsh-remielle-pet#readme
+    about: 安装、设置、状态检测、常见问题与 debug.md

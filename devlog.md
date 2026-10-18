@@ -1,5 +1,18 @@
 # 开发日志
 
+## 未发版（仓库官方规范对齐）
+
+### 2026-10-18（按 DSH 官方要求优化仓库元数据）
+
+- **可发现性**：GitHub 仓库添加 `dsh-plugin` 话题（DSH 官方 CONTRIBUTING 明确要求），并补充 `dsh` / `deepseek-harness` / `cordis` / `cordis-plugin` / `desktop-pet` / `web-ui` 等话题；About 描述更新为「蕾米埃尔桌宠 · DSH（DeepSeek Harness）插件…」
+- **许可证**：新增根目录 `LICENSE`（MIT），与 `package.json` 的 `license` 字段、README 的 License 段落对齐（此前 README 声称 MIT 但仓库没有许可证文件）
+- **包元数据**：`package.json` 补充 `author` / `homepage` / `repository` / `bugs` 与更多 `keywords`；`exports` 增加 `./locale/*.json`、`./icon`；`files` 补全 `locale` / `icon.png` / `LICENSE`；测试脚本改为 `node --test`（自动发现 `test/*.test.mjs`），新增 `npm run check`
+- **官方展示元数据**：新增 `icon.png`（256×256，透明底，取自 `default-gifs/idle.gif` 首帧）与 `locale/en.json`、`locale/zh.json`（`meta.title` / `meta.description`），对齐 DSH 官方插件开发规范的「Display metadata and icon」检查清单
+- **社区规范**：新增 `.github/ISSUE_TEMPLATE/{bug_report,feature_request,config}.yml`、`.github/PULL_REQUEST_TEMPLATE.md`、`.github/workflows/test.yml`（Node 22 / 24 执行 `npm run check` + `npm test`）与 `CONTRIBUTING.md`
+- **规格与测试**：新增 `spec/display-metadata.md`；新增 `test/display.test.mjs` 锁定展示字段、exports/files、locale、图标尺寸与 LICENSE；`npm test` 11/11 通过，`npm run check` 通过
+- **文档**：README 增加状态徽章、生态约定说明、新文件结构与贡献入口；development.md 同步目录结构、测试命令与展示元数据说明
+- **状态**：GitHub 话题与描述已通过 API 设置；本地文件改动已提交但**尚未 push**（等待用户明确指令）
+
 ## v1.1.1（当前）
 
 ### 2026-10-18（修复启动诊断 TypeError）

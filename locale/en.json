@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Remielle Pet",
+    "description": "A floating desktop pet for DeepSeek Harness (DSH) that switches GIFs with the session state. Works in the Web UI and the desktop app."
+  }
+}

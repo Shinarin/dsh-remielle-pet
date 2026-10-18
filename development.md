@@ -18,17 +18,25 @@ DSH 桌宠插件（蕾米埃尔），在 DSH（DeepSeek Harness）界面右下�
 
 ```
 dsh-remielle-pet/
-├── package.json          # 插件元数据（包名 dsh-remielle-pet），声明 bundle 和 client 注入
+├── package.json          # 插件元数据（包名、展示字段、exports / files），声明 bundle 和 client 注入
 ├── cordis.patch.yml      # Cordis 层配置：entry id / name = dsh-remielle-pet
 ├── lib/
 │   └── index.js          # 服务端入口：GIF 路由 + 配置持久化 + 旧配置迁移
 ├── client.js             # 客户端入口：浮动宠物 UI + 设置面板
+├── icon.png              # 插件管理页展示图标（256×256，透明底，≤256 KiB）
+├── locale/
+│   ├── en.json           # 英文展示标题与描述（meta.title / meta.description）
+│   └── zh.json           # 中文展示标题与描述
 ├── test/
-│   └── identity.test.mjs # 身份一致性、路由命名空间、配置迁移回归测试
+│   ├── identity.test.mjs # 身份一致性、路由命名空间、配置迁移回归测试
+│   └── display.test.mjs  # 展示元数据、发布包清单与许可证回归测试
 ├── default-gifs/         # 内置默认 GIF（idle/thinking/answering/approval）
 ├── docs/
 │   └── settings.png      # 设置面板截图
-├── spec/                 # 行为规格：state-detection.md、overlay-position.md、plugin-identity.md
+├── spec/                 # 行为规格：state-detection、overlay-position、plugin-identity、display-metadata
+├── .github/              # Issue / PR 模板与 CI 工作流（test.yml）
+├── LICENSE               # MIT 许可证
+├── CONTRIBUTING.md       # 参与贡献指南
 ├── development.md        # 本文件
 ├── devlog.md             # 开发日志
 └── debug.md              # 坑点记录
@@ -115,11 +123,19 @@ dsh plugin add <本仓库的本地路径>
 ### 测试
 
 ```bash
-npm test
+npm test        # node --test：自动发现 test/ 下的 *.test.mjs
+npm run check   # client.js / lib/index.js 语法检查
 ```
 
 `test/identity.test.mjs` 锁定：包名 / entry id / 客户端 loader id / 设置分区 id 一致；
 宿主只注册 `/plugins/dsh-remielle-pet/*` 路由；旧配置迁移到新路径；POST 配置写入新路径。
+
+`test/display.test.mjs` 锁定官方展示元数据：`package.json` 的
+`author` / `homepage` / `repository` / `bugs` / `keywords`、`exports["./locale/*.json"]` 与
+`exports["./icon"]`、`files` 清单完整性、`locale/{en,zh}.json` 的 `meta.title` /
+`meta.description`、`icon.png` 的 PNG 签名与 256 KiB 上限、`LICENSE` 与 `license` 字段一致。
+
+CI（`.github/workflows/test.yml`）在 Node 22 / 24 上执行同一组命令。
 
 ### 重启后测试
 
@@ -128,6 +144,22 @@ npm test
 - 单击桌宠 → 爱心飘出
 - 拖动桌宠 → 位置保存到 localStorage
 - 打开设置 → 调整大小 → 桌宠实时变化
+
+## 插件展示元数据（官方要求）
+
+DSH 官方的插件开发规范要求包根插件在插件管理页/设置页展示标题、描述和图标，且不激活插件
+即可读取。本项目对应实现（规格见 `spec/display-metadata.md`）：
+
+| 要求 | 本项目实现 |
+|---|---|
+| 可发现：GitHub 仓库添加 `dsh-plugin` 话题 | 仓库 About 已设置 `dsh-plugin` 及 `dsh` / `deepseek-harness` / `cordis` / `cordis-plugin` / `desktop-pet` 等话题 |
+| 展示标题/描述 | `locale/en.json`、`locale/zh.json` 的 `meta.title` / `meta.description` |
+| 展示图标 | `icon.png`（256×256，透明底，来自 `default-gifs/idle.gif` 首帧） |
+| 导出与打包 | `package.json` 的 `exports["./locale/*.json"]`、`exports["./icon"]`；`files` 包含运行时与展示资源 |
+| 市场索引字段 | `author` / `homepage` / `repository` / `bugs` / `keywords` / `description`，`dsh.bundle.patch` 与 `vX.Y.Z` 标签对齐 |
+
+> 图标与文案属于**展示信息**：缺失时 DSH 会回退到 `package.json` 的 `name` / `description`
+> 或默认图标，不会影响插件运行；但仍然必须由 `test/display.test.mjs` 拦截回归。
 
 ## 关键配置
 
