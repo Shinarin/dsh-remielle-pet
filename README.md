@@ -156,6 +156,7 @@ dsh-remielle-pet/
   docs/                 # 文档配图
   spec/                 # 行为规格（状态检测、位置锚定、插件身份）
   development.md        # 开发者文档
+  CHANGELOG.md          # 面向用户的更新日志
   devlog.md             # 开发日志
   debug.md              # 坑点记录
 ```

@@ -11,7 +11,7 @@
 - **新增规格与测试**：`spec/plugin-identity.md` 定义身份契约；`test/identity.test.mjs`（`npm test`）锁定包名/id/路由命名空间与配置迁移
 - **文档**：README 增加「从旧版 dsh-pet 升级」与「与其他桌宠插件共存」；development.md、debug.md 同步更新
 - **仓库改名**：GitHub 仓库 `Shinarin/dsh-pet` → `Shinarin/dsh-remielle-pet`（旧地址由 GitHub 重定向）
-- 注意：本地已 commit，未 push、未发版；远端 `master` 仍为改动前的提交
+- **发版**：已 push 到 `origin/master`（`d118f22`）；新增 `CHANGELOG.md`，打 tag `v1.1.0` 并发布 GitHub Release
 
 ## v1.0.0
 
